@@ -126,15 +126,24 @@ resource "aws_ses_email_identity" "from_address" {
 }
 
 # ========== S3 + CloudFront ==========
+
 resource "aws_s3_bucket" "frontend" {
   bucket = "kinetechteetimeapp-frontend"
   acl    = "public-read"
+}
 
-  website {
-    index_document = "index.html"
-    error_document = "index.html"
+resource "aws_s3_bucket_website_configuration" "frontend_site" {
+  bucket = aws_s3_bucket.frontend.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "index.html"
   }
 }
+
 
 resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for kinetechteetimeapp frontend"
