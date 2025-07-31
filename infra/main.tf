@@ -50,7 +50,10 @@ resource "aws_iam_policy" "lambda_dynamodb_ses" {
     {
       "Effect": "Allow",
       "Action": ["secretsmanager:GetSecretValue"],
-      "Resource": "${aws_secretsmanager_secret.openai.arn}"
+      "Resource": [
+        "${aws_secretsmanager_secret.openai.arn}",
+        "${aws_secretsmanager_secret.sendgrid.arn}"
+      ]
     }
   ]
 }
@@ -103,6 +106,16 @@ resource "aws_secretsmanager_secret_version" "openai_value" {
   secret_id     = aws_secretsmanager_secret.openai.id
   secret_string = var.openai_api_key
 }
+
+resource "aws_secretsmanager_secret" "sendgrid" {
+  name = "prod/sendgrid/api_key"
+}
+
+resource "aws_secretsmanager_secret_version" "sendgrid_value" {
+  secret_id     = aws_secretsmanager_secret.sendgrid.id
+  secret_string = jsonencode({ SENDGRID_API_KEY = var.sendgrid_api_key })
+}
+
 
 # ========== SES Configuration ==========
 resource "aws_ses_domain_identity" "identity" {
@@ -321,13 +334,4 @@ resource "aws_api_gateway_stage" "prod" {
   rest_api_id    = aws_api_gateway_rest_api.api.id
   stage_name     = "prod"
   deployment_id  = aws_api_gateway_deployment.deployment.id
-}
-
-resource "aws_secretsmanager_secret" "sendgrid" {
-  name = "prod/sendgrid/api_key"
-}
-
-resource "aws_secretsmanager_secret_version" "sendgrid_value" {
-  secret_id     = aws_secretsmanager_secret.sendgrid.id
-  secret_string = jsonencode({ SENDGRID_API_KEY = var.sendgrid_api_key })
 }
