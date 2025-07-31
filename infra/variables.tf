@@ -10,3 +10,7 @@ variable "openai_api_key" {
   type        = string
 }
 
+variable "sendgrid_api_key" {
+  description = "SendGrid API key stored in Secrets Manager"
+  type        = string
+}

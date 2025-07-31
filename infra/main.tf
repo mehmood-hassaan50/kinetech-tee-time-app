@@ -37,7 +37,9 @@ resource "aws_iam_policy" "lambda_dynamodb_ses" {
       ],
       "Resource": [
         "${aws_dynamodb_table.GolfCourses.arn}",
-        "${aws_dynamodb_table.Bookings.arn}"
+        "${aws_dynamodb_table.Bookings.arn}",
+        "${aws_secretsmanager_secret.openai.arn}",
+        ""${aws_secretsmanager_secret.sendgrid.arn}"
       ]
     },
     {
@@ -321,3 +323,11 @@ resource "aws_api_gateway_stage" "prod" {
   deployment_id  = aws_api_gateway_deployment.deployment.id
 }
 
+resource "aws_secretsmanager_secret" "sendgrid" {
+  name = "prod/sendgrid/api_key"
+}
+
+resource "aws_secretsmanager_secret_version" "sendgrid_value" {
+  secret_id     = aws_secretsmanager_secret.sendgrid.id
+  secret_string = jsonencode({ SENDGRID_API_KEY = var.sendgrid_api_key })
+}
