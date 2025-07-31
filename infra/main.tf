@@ -129,7 +129,6 @@ resource "aws_ses_email_identity" "from_address" {
 
 resource "aws_s3_bucket" "frontend" {
   bucket = "kinetechteetimeapp-frontend"
-  acl    = "public-read"
 }
 
 resource "aws_s3_bucket_website_configuration" "frontend_site" {
